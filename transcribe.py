@@ -1,52 +1,32 @@
-import whisper
 import os
+import sys
+import time
+import shutil
+import traceback
 import tkinter as tk
 from tkinter import filedialog, messagebox
-import time
 import torch
-import traceback
-import subprocess
-import sys
-"""""
-def check_ffmpeg(): # funzione per verificare l'installazione di ffmpeg
-    check = False
-   
-    i = 0
-    try:
-        return_code = subprocess.run(["ffmpeg"], shell= False, text=True)
-        if(return_code == 0):
-            print("ffmpeg is intalled")
-            return True
-        else:
-            while i < 3:
-                choice = input("ffmpeg isn't install, if you want i can install it for you y/n: ")
-                if(choice == "y"):
-                    print("great i will start now....")
-                    #install_ffmpeg
-                    return True
-                elif(choice == "n"):
-                    sys.exit("ok, i think you would install by yourself, see you soon")
-                else:
-                    print("sorry, but you have to write Y for yes or N for no")
-                    i += 1
-            sys.exit("sorry too many attempt, you have 3 attempt")
-                
-    except Exception as e:
-        print("ffmpeg has some problems")
+import whisper
 
-def install_ffmpeg():
-    try:
-        pass
-    except Exception as e:
-        print("various problem")
-    pass
 
-def check_torch():
-    pass
-"""""
-# funzione per il dialogo di selezione del file audio
+def check_ffmpeg():
+    """Verifica se FFmpeg è installato nel sistema.""" 
+    if shutil.which("ffmpeg") is None:
+        # Mostra un messaggio di errore all'utente se FFmpeg non è trovato
+        messagebox.showerror(
+            "Errore dipendenze",
+            "FFmpeg non è installato o non è nel PATH di sistema.\n"
+            "Whisper richiede FFmpeg per funzionare. Per favore, installalo."
+        )
+        sys.exit("FFmpeg mancante. Chiusura del programma.")
+
+
 def file_dialog(window):
-    file_path = filedialog.askopenfilename(title="Select an audio file",filetypes=(("Audio Files", "*.mp3;*.wav;*.m4a;*.mp4"), ("All Files", "*.*")))
+    """Apre una finestra di dialogo per permettere all'utente di selezionare un file audio."""
+    file_path = filedialog.askopenfilename(
+        title="Seleziona un file audio",
+        filetypes=(("Audio Files", "*.mp3;*.wav;*.m4a;*.mp4"), ("All Files", "*.*"))
+    )
     return file_path
 
 # funzione per controllare che il file audio esista
@@ -60,76 +40,95 @@ def check_input(input_user, model):
 
 # funzione per la trascrizione
 def transcribe_file(path_file, model):
-# esegui la trascrizione
-    risultato = model.transcribe(path_file, language="it")
-# stampa il risultato della trascrizione
-    return risultato["text"]
+    """Esegue la trascrizione del file audio utilizzando il modello Whisper specificato."""
+    print(f"Trascrizione del file '{os.path.basename(path_file)}' in corso...")
+    
+    # Esegue la trascrizione forzando la lingua italiana
+    result = model.transcribe(path_file, language="it")
+    return result["text"]
 
-# funzione per salvare la trascrizione su file
-def save_transcription(root, text_transcripted, path_output=None):
+
+def save_transcription(text_transcripted):
+    """Apre una finestra di dialogo per salvare il testo in un file .txt."""
+    path_output = filedialog.asksaveasfilename(
+        title="Salva trascrizione come...",
+        defaultextension=".txt",
+        filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
+    )
+    
+    # Se l'utente annulla il salvataggio
     if not path_output:
-        path_output = filedialog.asksaveasfilename(
-            title="Salva trascrizione come...",
-            defaultextension=".txt",
-            filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
-        )
-        if not path_output:
-            print("Salvataggio annullato.")
-            return None
+        print("Salvataggio annullato dall'utente.")
+        return None
+        
+    # Scrive il testo nel file specificato
     with open(path_output, "w", encoding="utf-8") as f:
         f.write(text_transcripted)
+        
     return path_output
 
-# Funzione principale
+
 def main():
+    # Inizializza la finestra nascosta di Tkinter per i dialoghi GUI
     window = tk.Tk()    
     window.withdraw()
-    window.update()  #forza aggiornamento
-
-    ##check_ffmpeg()
+    window.update()  # Forza l'aggiornamento per evitare bug visivi
+    
+    # Controlla se FFmpeg è disponibile prima di iniziare le operazioni pesanti
+    check_ffmpeg()
 
     try:
-#carica il modello Whisper (questa operazione può richiedere tempo)
-        print("Caricamento del modello Whisper...")
+        # Carica il modello Whisper
+        print("Caricamento del modello Whisper 'medium'...")
         model = whisper.load_model("medium")
         
+        # Gestione hardware (Sposta il calcolo su GPU se disponibile)
         if torch.cuda.is_available():
             model = model.to(torch.device("cuda"))
-            print("Modello spostato sulla GPU.")
+            print("Modello caricato con successo sulla GPU (CUDA).")
         else:
             model = model.to(torch.device("cpu"))
-            print("CUDA non disponibile, utilizzando la CPU.")
+            print("CUDA non disponibile. Utilizzo della CPU.")
 
-        print("Modello caricato.")
-        
-        print("Seleziona un file audio...")
+        # Selezione del file audio tramite interfaccia grafica
+        print("In attesa della selezione del file audio...")
         percorso_file = file_dialog(window)
+        
         if not percorso_file:
-            print("Nessun file selezionato.")
+            print("Nessun file selezionato. Uscita.")
             return
 
-        start_time = time.time() # serve per dare un feedback di quanto ci metta a fare la trascrizi
- 
-        print(f"Trascrizione del file {percorso_file} in corso...") # messaggio di feedback
+        # Avvio del processo di trascrizione con misurazione del tempo
+        start_time = time.time()
         testo_trascritto = transcribe_file(percorso_file, model)
-        print("Trascrizione completata.")
+        elapsed_time = time.time() - start_time
+        
+        print("Trascrizione completata con successo!")
+        print(f"Tempo impiegato: {elapsed_time:.2f} secondi.")
 
-        end_time = time.time() #fine del timer
-        elapsed_time = end_time - start_time # calcolo del tempo trascorso
-        print(f"Tempo di trascrizione: {elapsed_time:.2f} secondi.") # output
-
-        percorso_output = save_transcription(window, testo_trascritto)
+        # Salvataggio del file
+        percorso_output = save_transcription(testo_trascritto)
+        
         if percorso_output:
-            print(f"Trascrizione salvata in '{percorso_output}'.")
-            messagebox.showinfo("Completato", f"Trascrizione completata e salvata in '{percorso_output}'.")
+            print(f"Trascrizione salvata in:\n{percorso_output}")
+            messagebox.showinfo(
+                "Operazione completata",
+                f"Trascrizione completata e salvata in:\n{percorso_output}"
+            )
         
     except Exception as e:
+        # Gestione degli errori: salva i dettagli in un file di log e mostra un popup
         error_message = f"Errore: {str(e)}\n{traceback.format_exc()}"
         print(error_message)
+        
         with open("error_log.txt", "w", encoding="utf-8") as f:
             f.write(error_message)
-        messagebox.showerror("Errore", f"Si è verificato un errore:\n{str(e)}\n\nDettagli salvati in 'error_log.txt'")
-        input("Premi Invio per uscire...")
+            
+        messagebox.showerror(
+            "Errore durante l'esecuzione", 
+            f"Si è verificato un errore imprevisto:\n{str(e)}\n\nI dettagli completi sono stati salvati in 'error_log.txt'"
+        )
+
 
 if __name__ == "__main__":
     main()
