@@ -33,10 +33,6 @@ I’m also learning English, so if you notice some strange phrasing, that’s no
 pip install torch
 pip install openai-whisper
 
-### Your computer should have:
-- **Graphics card**: NVIDIA GPU is great but not required
-- **RAM**: At least 4GB free
-- **Internet**: To download the AI model (first time only)
 ```
 
 ### 🖥️ Hardware requirement
