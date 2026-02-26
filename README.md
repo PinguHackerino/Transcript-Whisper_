@@ -17,25 +17,34 @@ I’m also learning English, so if you notice some strange phrasing, that’s no
 - ⚡ **Uses your GPU**: Automatically uses your graphics card if you have one
 - 💾 **Saves your text**: Saves the transcription as a .txt file
 - ⏱️ **Shows timing**: Tells you how long it took
-- 🚨 **Error logging**: Saves error details to help fix problems
+- 🚨 **Error logging**: Saves error details to help fix problems (in theory)
 
 ## 🔧 What You Need
 
 ### Software:
-- Python 3.7 or newer (i would recommed Py 3.10.9)
-- That's basically it! The script will tell you what else to install.
+- Python 3.7 or newer (I would recommend Py 3.10.9)
+- **FFmpeg**: This is required by Whisper to process audio. 
+  - *Windows*: You can install it via winget (`winget install ffmpeg`) or download it online.
+  - *Mac*: `brew install ffmpeg`
+  - *Linux*: `sudo apt install ffmpeg`
 
-### To install the required stuff:
+### To install the required Python packages:
 ```
 pip install torch
 pip install openai-whisper
-```
 
 ### Your computer should have:
 - **Graphics card**: NVIDIA GPU is great but not required
 - **RAM**: At least 4GB free
 - **Internet**: To download the AI model (first time only)
+```
 
+### 🖥️ Hardware requirement
+
+Your computer should have:
+- **Graphics card**: NVIDIA GPU is great but not required
+- **RAM**: At least 8GB free
+- **Internet**: To download the AI model (first time only)
 
 ## 🚀 How to Use It
 
@@ -71,11 +80,12 @@ pip install openai-whisper
 - [x] GPU support (if available)
 - [x] Saves transcription to file
 - [x] Error handling
+- [x] Automatic FFmpeg check
 
 ### WIP:
-- [ ] Automatic FFmpeg check/install
 - [ ] Choose different AI models (small, medium, large)
 - [ ] Better interface
+- [ ] FFmpeg install
 - [ ] Process multiple files at once
 - [ ] Different languages
 
@@ -87,11 +97,10 @@ pip install openai-whisper
 
 ## ⚠️ Things to Know
 
-- **First time**: Downloads AI model (takes a while, be patient!)
+- **First time**: Downloads the AI model (currently set to the **"medium"** model). It takes a while and is around 1.5GB, be patient!
 - **GPU helps**: Much faster with a good graphics card
 - **File size**: Really long audio files need more RAM
 - **Audio quality**: Clear audio = better transcription
-
 ## 🐛 If Something Goes Wrong
 
 ### Common issues:
