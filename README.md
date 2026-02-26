@@ -82,7 +82,7 @@ Your computer should have:
 - [ ] Choose different AI models (small, medium, large)
 - [ ] Better interface
 - [ ] FFmpeg install
-- [ ] Process multiple files at once
+- [ ] Automatic torch check/install
 - [ ] Different languages
 
 ### Maybe for the future:
@@ -90,6 +90,8 @@ Your computer should have:
 - [ ] Subtitle files
 - [ ] Better text formatting
 - [ ] Better error handling
+- [ ] Process multiple files at once
+
 
 ## ⚠️ Things to Know
 
