@@ -1,13 +1,13 @@
+from itertools import count
 import os
 import sys
 import time
 import shutil
 import traceback
-import tkinter as tk
+import tkinter as GUI
 from tkinter import filedialog, messagebox
 import torch
 import whisper
-
 
 def check_ffmpeg():
     """Verifica se FFmpeg è installato nel sistema.""" 
@@ -21,12 +21,32 @@ def check_ffmpeg():
         sys.exit("FFmpeg mancante. Chiusura del programma.")
 
 
-def file_dialog(window):
-    """Apre una finestra di dialogo per permettere all'utente di selezionare un file audio."""
+def file_dialog():
+    """Apre una finestra di dialogo per permettere all'utente di selezionare un file audio.
+
+    Creiamo un root temporaneo, lo nascondiamo e lo rendiamo "topmost" in modo che
+    la finestra di dialogo non finisca nascosta dietro ad altre applicazioni. Poi
+    lo distruggiamo una volta che la selezione è stata effettuata (o annullata).
+    """
+    root = GUI.Tk()
+    # non vogliamo mostrare la finestra principale
+    root.withdraw()
+
+    # forziamo un aggiornamento e facciamo in modo che il dialogo sia in primo piano
+    root.update()
+    try:
+        root.attributes("-topmost", True)
+    except Exception:
+        # alcuni gestori di finestre potrebbero ignorare l'attributo
+        pass
+
     file_path = filedialog.askopenfilename(
+        parent=root,
         title="Seleziona un file audio",
         filetypes=(("Audio Files", "*.mp3;*.wav;*.m4a;*.mp4"), ("All Files", "*.*"))
     )
+
+    root.destroy()  # Chiude la finestra dopo aver selezionato il file
     return file_path
 
 # funzione per controllare che il file audio esista
@@ -67,36 +87,42 @@ def save_transcription(text_transcripted):
         
     return path_output
 
+def check_gpu():
+    if torch.cuda.is_available():
+        print("GPU NVIDIA rilevata. Utilizzo della GPU per la trascrizione.")
+        return True
+    else:
+        print("Nessuna GPU NVIDIA rilevata. Utilizzo della CPU per la trascrizione.")
+        return False
 
 def main():
+    options = ['tiny', 'base', 'small', 'medium', 'large'] ## Opzioni dei modelli disponibili in Whisper
     # Inizializza la finestra nascosta di Tkinter per i dialoghi GUI
-    window = tk.Tk()    
-    window.withdraw()
-    window.update()  # Forza l'aggiornamento per evitare bug visivi
     
     # Controlla se FFmpeg è disponibile prima di iniziare le operazioni pesanti
     check_ffmpeg()
+    check_gpu()  # Verifica la presenza di una GPU NVIDIA e informa l'utente
 
     try:
         # Carica il modello Whisper
-        print("Caricamento del modello Whisper 'medium'...")
-        model = whisper.load_model("medium")
-        
-        # Gestione hardware (Sposta il calcolo su GPU se disponibile)
-        if torch.cuda.is_available():
-            model = model.to(torch.device("cuda"))
-            print("Modello caricato con successo sulla GPU (CUDA).")
-        else:
-            model = model.to(torch.device("cpu"))
-            print("CUDA non disponibile. Utilizzo della CPU.")
+        print("Scegliere il modello da utilizzare (può richiedere da qualche secondo a diversi minuti a seconda del modello scelto)...")
+        count = 0
+        while count < 3:  # Limita a 3 tentativi per inserire un modello valido
+            model_name = input(f"Scegli tra {options}: ").strip().lower()
+            if model_name not in options:
+                count += 1
+                print(f"Modello non valido. Tentativo {count}/3.")
+            else:
+                model = whisper.load_model(model_name)
+                break
 
         # Selezione del file audio tramite interfaccia grafica
         print("In attesa della selezione del file audio...")
-        percorso_file = file_dialog(window)
+        print("-> chiamando file_dialog()")
+        percorso_file = file_dialog()
+        print(f"<- ritorno da file_dialog(), valore={percorso_file!r}")
         
-        if not percorso_file:
-            print("Nessun file selezionato. Uscita.")
-            return
+        check_input(percorso_file, model)  # Verifica che il file esista e sia accessibile
 
         # Avvio del processo di trascrizione con misurazione del tempo
         start_time = time.time()
