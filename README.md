@@ -84,6 +84,7 @@ Your computer should have:
 - [ ] FFmpeg install
 - [ ] Automatic torch check/install
 - [ ] Different languages
+- [ ] Opus file audio support
 
 ### Maybe for the future:
 - [ ] Video files
