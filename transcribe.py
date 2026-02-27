@@ -22,30 +22,13 @@ def check_ffmpeg():
 
 
 def file_dialog():
-    """Apre una finestra di dialogo per permettere all'utente di selezionare un file audio.
-
-    Creiamo un root temporaneo, lo nascondiamo e lo rendiamo "topmost" in modo che
-    la finestra di dialogo non finisca nascosta dietro ad altre applicazioni. Poi
-    lo distruggiamo una volta che la selezione è stata effettuata (o annullata).
-    """
-    root = GUI.Tk()
-    # non vogliamo mostrare la finestra principale
+    """Apre una finestra di dialogo per permettere all'utente di selezionare un file audio."""
+    root = GUI.Tk()    
     root.withdraw()
-
-    # forziamo un aggiornamento e facciamo in modo che il dialogo sia in primo piano
-    root.update()
-    try:
-        root.attributes("-topmost", True)
-    except Exception:
-        # alcuni gestori di finestre potrebbero ignorare l'attributo
-        pass
-
     file_path = filedialog.askopenfilename(
-        parent=root,
         title="Seleziona un file audio",
         filetypes=(("Audio Files", "*.mp3;*.wav;*.m4a;*.mp4"), ("All Files", "*.*"))
     )
-
     root.destroy()  # Chiude la finestra dopo aver selezionato il file
     return file_path
 
@@ -115,12 +98,14 @@ def main():
             else:
                 model = whisper.load_model(model_name)
                 break
+            
 
         # Selezione del file audio tramite interfaccia grafica
         print("In attesa della selezione del file audio...")
-        print("-> chiamando file_dialog()")
+        ##print("-> chiamando file_dialog()")
         percorso_file = file_dialog()
-        print(f"<- ritorno da file_dialog(), valore={percorso_file!r}")
+        print(f"File selezionato: {percorso_file!r}")
+        ##print(f"<- ritorno da file_dialog(), valore={percorso_file!r}")
         
         check_input(percorso_file, model)  # Verifica che il file esista e sia accessibile
 

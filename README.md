@@ -75,11 +75,11 @@ Your computer should have:
 - [x] Audio transcription
 - [x] GPU support (if available)
 - [x] Saves transcription to file
-- [x] Error handling
+- [x] Error handling (the code generate a log file)
 - [x] Automatic FFmpeg check
+- [x] Choose different AI models 
 
 ### WIP:
-- [ ] Choose different AI models (small, medium, large)
 - [ ] Better interface
 - [ ] FFmpeg install
 - [ ] Automatic torch check/install
@@ -95,10 +95,11 @@ Your computer should have:
 
 ## ⚠️ Things to Know
 
-- **First time**: Downloads the AI model (currently set to the **"medium"** model). It takes a while and is around 1.5GB, be patient!
+- **First time**: Downloads the AI model. It takes a while and is around 1.5GB, be patient!
 - **GPU helps**: Much faster with a good graphics card
 - **File size**: Really long audio files need more RAM
 - **Audio quality**: Clear audio = better transcription
+
 ## 🐛 If Something Goes Wrong
 
 ### Common issues:
@@ -120,7 +121,7 @@ If you find bugs or have ideas, I'd love to hear them.
 This is my first "real" programming project, so:
 - The code might not be the most elegant
 - I'm learning best practices as I go
-- Comments in the code are sometimes in Italian (sorry!)
+- Comments in the code are often in Italian (sorry!)
 - I'm trying to make it work first, then make it pretty
 
 ---
