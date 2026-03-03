@@ -77,14 +77,17 @@ Your computer should have:
 - [x] Saves transcription to file
 - [x] Error handling (the code generate a log file)
 - [x] Automatic FFmpeg check
-- [x] Choose different AI models 
+- [x] Automatic Whisper check
+- [x] Automatic Torch check
+- [x] Choose different AI models
 
 ### WIP:
 - [ ] Better interface
-- [ ] FFmpeg install
-- [ ] Automatic torch check/install
+- [ ] Automatic FFmpeg install
+- [ ] Automatic torch install
+- [ ] Automatic whisper install
 - [ ] Different languages
-- [ ] Opus file audio support
+- [ ] WhatsApp file audio support
 
 ### Maybe for the future:
 - [ ] Video files
