@@ -9,6 +9,8 @@ from tkinter import filedialog, messagebox
 import torch
 import whisper
 
+
+z
 def check_ffmpeg():
     """Verifica se FFmpeg è installato nel sistema.""" 
     if shutil.which("ffmpeg") is None:
@@ -19,26 +21,6 @@ def check_ffmpeg():
             "Whisper richiede FFmpeg per funzionare. Per favore, installalo."
         )
         sys.exit("FFmpeg mancante. Chiusura del programma.")
-
-def check_torch():
-    """Verifica se Torch sia presente"""
-    if shutil.which("torch") is None:
-        messagebox.showerror(
-            "Errore dipendenze",
-            "Torch non è installato o non è nel PATH di sistema.\n"
-            "Whisper richiede Torch per funzionare. Per favore, installalo."
-        )
-        sys.exit("Torch mancante. Chiusura del programma.")
-
-def check_whisper():
-    """Verifica se Whisper sia presente"""
-    if shutil.which("whisper") is None:
-        messagebox.showerror(
-            "Errore dipendenze",
-            "Whisper non è installato o non è nel PATH di sistema.\n"
-            "Per favore, installalo."
-        )
-        sys.exit("Whisper mancante. Chiusura del programma.")
 
 
 
@@ -105,8 +87,8 @@ def main():
     
     # Controlla se FFmpeg è disponibile prima di iniziare le operazioni pesanti
     check_ffmpeg()
-    check_torch()
-    check_whisper()
+    #check_torch()
+    #check_whisper()
     check_gpu()  # Verifica la presenza di una GPU NVIDIA e informa l'utente
 
     try:
