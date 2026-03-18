@@ -8,21 +8,7 @@ import tkinter as GUI
 from tkinter import filedialog, messagebox
 import torch
 import whisper
-
-
-z
-def check_ffmpeg():
-    """Verifica se FFmpeg è installato nel sistema.""" 
-    if shutil.which("ffmpeg") is None:
-        # Mostra un messaggio di errore all'utente se FFmpeg non è trovato
-        messagebox.showerror(
-            "Errore dipendenze",
-            "FFmpeg non è installato o non è nel PATH di sistema.\n"
-            "Whisper richiede FFmpeg per funzionare. Per favore, installalo."
-        )
-        sys.exit("FFmpeg mancante. Chiusura del programma.")
-
-
+from check import check_ffmpeg, check_gpu, check_input
 
 def file_dialog():
     """Apre una finestra di dialogo per permettere all'utente di selezionare un file audio."""
@@ -34,15 +20,6 @@ def file_dialog():
     )
     root.destroy()  # Chiude la finestra dopo aver selezionato il file
     return file_path
-
-# funzione per controllare che il file audio esista
-def check_input(input_user, model):
-    if os.path.exists(input_user):
-        result = model.transcribe(input_user, language="it")
-        # stampa il risultato della trascrizione
-        return result["text"]
-    else:
-        raise FileNotFoundError(f"The file {input_user} does not exist.")  
 
 # funzione per la trascrizione
 def transcribe_file(path_file, model):
@@ -73,14 +50,6 @@ def save_transcription(text_transcripted):
         
     return path_output
 
-def check_gpu():
-    if torch.cuda.is_available():
-        print("GPU NVIDIA rilevata. Utilizzo della GPU per la trascrizione.")
-        return True
-    else:
-        print("Nessuna GPU NVIDIA rilevata. Utilizzo della CPU per la trascrizione.")
-        return False
-
 def main():
     options = ['tiny', 'base', 'small', 'medium', 'large'] ## Opzioni dei modelli disponibili in Whisper
     # Inizializza la finestra nascosta di Tkinter per i dialoghi GUI
@@ -109,7 +78,7 @@ def main():
         print("In attesa della selezione del file audio...")
         ##print("-> chiamando file_dialog()")
         percorso_file = file_dialog()
-        print(f"File selezionato: {percorso_file!r}")
+        print(f"File selezionato: {percorso_file!r}") 
         ##print(f"<- ritorno da file_dialog(), valore={percorso_file!r}")
         
         check_input(percorso_file, model)  # Verifica che il file esista e sia accessibile
