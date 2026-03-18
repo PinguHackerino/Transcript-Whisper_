@@ -127,6 +127,7 @@ This is my first "real" programming project, so:
 - I'm learning best practices as I go
 - Comments in the code are often in Italian (sorry!)
 - I'm trying to make it work first, then make it pretty
+- Can be that when a I do a new commit the code could be instable or not functioning properly 
 
 ---
 
